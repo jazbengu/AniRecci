@@ -1,8 +1,8 @@
-# Anime Recommendation App
+# AniRecci
 
 ## Overview
 
-The Anime Recommendation App is a web application built with Streamlit that allows users to input their favorite anime titles and receive recommendations for lesser-known anime based on content similarity. The application utilizes the Jikan API to fetch anime data and employs machine learning techniques for recommendation.
+AniRecci is a web application built with Streamlit that allows users to input their favorite anime titles and receive recommendations for lesser-known anime based on content similarity. The application utilizes the Jikan API to fetch anime data and employs machine learning techniques for recommendation.
 
 ## Features
 
