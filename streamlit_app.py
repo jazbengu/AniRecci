@@ -49,20 +49,6 @@ def fetch_anime_data_paged(limit=4500):
 
     from sklearn.preprocessing import MinMaxScaler
 
-anime_df = pd.read_csv('raw_anime_data_paged.csv')
-anime_df = anime_df.drop_duplicates(subset='title', keep='first')
-anime_df['rating'] = anime_df['rating'].fillna(anime_df['rating'].mean())
-anime_df['description'] = anime_df['description'].fillna("No description available.")
-anime_df['genres'] = anime_df['genres'].apply(lambda x: [g.lower() for g in eval(x)] if pd.notna(x) else [])
-anime_df['popularity'] = anime_df['popularity'].fillna(anime_df['popularity'].max())
-threshold = anime_df["popularity"].quantile(0.5)
-
-# Filter less popular anime
-less_popular_anime = anime_df[anime_df["popularity"] > threshold]
-
-# Save the filtered dataset if needed
-less_popular_anime.to_csv('less_popular_anime.csv', index=False)
-print("Filtered less popular anime saved successfully!")
 
 
 def fetch_anime_details(title):
@@ -167,7 +153,7 @@ if __name__ == "__main__":
                         st.markdown(f"**Title:** {anime['title']}")
                         st.markdown(f"**Genres:** {', '.join(anime['genres'])}")
                         st.markdown(f"**Rating:** {anime['rating']:.1f}")
-                        st.markdown(f"**Description:** {anime['description']}...")
+                        st.markdown(f"**Description:** {anime['description'][:250]}...")
 
                 else:
                     st.error("No recommendations could be generated.")
