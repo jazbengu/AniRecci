@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import ast
+from sklearn.preprocessing import MultiLabelBinarizer
 
 # Title of the app
 st.title("Deep Exploratory Data Analysis")
@@ -12,6 +14,7 @@ uploaded_file = "raw_anime_data_paged.csv"
 if uploaded_file is not None:
     # Read the data
     data = pd.read_csv(uploaded_file)
+    for_Hm = data
 
     # Display the first few rows of the dataframe
     st.subheader("Data Preview")
@@ -41,10 +44,24 @@ if uploaded_file is not None:
 
     # Correlation heatmap
     if st.checkbox("Show Correlation Heatmap"):
-        fig, ax = plt.subplots()
-        sns.heatmap(data.corr(), annot=True, cmap='coolwarm', ax=ax)
-        st.pyplot(fig)
+        for_Hm['genres'] = for_Hm['genres'].apply(ast.literal_eval)
+        mlb = MultiLabelBinarizer()
+        genres_encoded = pd.DataFrame(mlb.fit_transform(for_Hm['genres']), 
+                                    columns=mlb.classes_, 
+                                    index=for_Hm.index)
+        for_Hm['rating'].fillna(for_Hm['rating'].median(), inplace=True)
 
+        anime_features = pd.concat([genres_encoded, for_Hm[['popularity', 'rating']]], axis=1)
+
+        correlation_matrix = anime_features.corr()
+        plt.figure(figsize=(16, 12))
+
+        # Plotting the heatmap
+        sns.heatmap(correlation_matrix, annot=False, cmap="coolwarm", fmt=".2f", cbar=True)
+
+        # Adding titles and labels
+        plt.title("Heatmap of Anime Features (Genres, Popularity, and Ratings)", fontsize=16)
+        plt.show()
     # Pairplot
     if st.checkbox("Show Pairplot"):
         fig = sns.pairplot(data)
