@@ -67,9 +67,3 @@ def eda_page():
 if __name__ == "__main__":
     st.sidebar.title("Navigation")
     page = st.sidebar.radio("Go to", ["Recommendations", "EDA"])
-
-    if page == "Recommendation":
-        # Include your existing recommendation system code here
-        pass  # Replace this with your recommendation system code
-    elif page == "EDA":
-        eda_page()
