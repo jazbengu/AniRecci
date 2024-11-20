@@ -6,10 +6,10 @@ import ast
 from sklearn.preprocessing import MultiLabelBinarizer
 
 # Title of the app
-st.title("Deep Exploratory Data Analysis For Full List")
+st.title("Deep Exploratory Data Analysis For Niche List")
 
 # Upload CSV file
-uploaded_file = "raw_anime_data_paged.csv"
+uploaded_file = "less_popular_anime.csv"
 
 if uploaded_file is not None:
     # Read the data
@@ -113,4 +113,3 @@ if uploaded_file is not None:
             fig, ax = plt.subplots()
             sns.histplot(data[column], bins=30, kde=True, ax=ax)
             st.pyplot(fig)
-
