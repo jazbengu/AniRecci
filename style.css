@@ -1,0 +1,30 @@
+
+    /* Target the Streamlit main container */
+    .main {
+        background-color: #5F8B8B; /* Serenity Blue */
+        color: white; /* Ensure text is white for contrast */
+    }
+
+    /* Customize Streamlit title and other text components */
+    .stTitle {
+        color: white;
+    }
+
+    /* Add styles for any additional components you need */
+    .stButton>button {
+        background-color: #4C7C7C; /* A slightly darker shade of Serenity Blue for buttons */
+        color: white;
+        border-radius: 5px;
+    }
+
+    .stSlider>div {
+        background-color: #4C7C7C; /* Background color for sliders */
+        color: white;
+    }
+
+    .stSelectbox select {
+        background-color: #4C7C7C; /* Background color for dropdowns */
+        color: white;
+    }
+
+    /* Additional custom styling for other Streamlit elements can go here */

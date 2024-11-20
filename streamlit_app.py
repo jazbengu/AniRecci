@@ -4,6 +4,9 @@ import requests
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
+# Load external CSS
+st.markdown('<style>' + open('style.css').read() + '</style>', unsafe_allow_html=True)
+
 # Function to fetch anime details
 def fetch_anime_details(title):
     try:
@@ -107,14 +110,21 @@ if __name__ == "__main__":
 
                     for col, anime in zip(cols, st.session_state.recommendations):
                         with col:
+                            # If an image URL is not available, use a placeholder
                             image_url = anime.get('image_url', "https://via.placeholder.com/120")
+
+                            # Display the recommendation card with detailed information
                             st.image(image_url, width=120)
-                            st.markdown(f"<div class='recommendation-card'>", unsafe_allow_html=True)
-                            st.markdown(f"**Title:** {anime['title']}")
-                            st.markdown(f"**Genres:** {', '.join(anime['genres'])}")
-                            st.markdown(f"**Rating:** {anime['rating']:.1f}")
-                            st.markdown(f"**Description:** {anime['description'][:250]}...")
-                            st.markdown("</div>", unsafe_allow_html=True)
+                            
+                            # Use the 'recommendation-card' class for styling
+                            st.markdown(f"""
+                            <div class='recommendation-card'>
+                                <h4>{anime['title']}</h4>
+                                <p><strong>Genres:</strong> {', '.join(anime['genres'])}</p>
+                                <p><strong>Rating:</strong> {anime['rating']:.1f}</p>
+                                <p><strong>Description:</strong> {anime['description'][:250]}...</p>
+                            </div>
+                            """, unsafe_allow_html=True)
 
                     feedback = get_user_feedback()
                     if feedback != "Select":
@@ -131,4 +141,3 @@ if __name__ == "__main__":
     if st.session_state.feedback:
         st.write(f"### Thank You for Your Feedback! 🙏")
         st.markdown(f"Your feedback: {st.session_state.feedback}")
-
