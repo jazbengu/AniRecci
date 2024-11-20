@@ -1,75 +1,82 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
 import seaborn as sns
+import matplotlib.pyplot as plt
 
-# Load the dataset
-@st.cache_data
-def load_data():
-    return pd.read_csv('raw_anime_data_paged.csv')
+# Title of the app
+st.title("Deep Exploratory Data Analysis")
 
-# Function for EDA
-def eda_page():
-    st.title("Exploratory Data Analysis (EDA)")
+# Upload CSV file
+uploaded_file = "raw_anime_data_paged.csv"
 
-    # Load the dataset
-    anime_df = load_data()
+if uploaded_file is not None:
+    # Read the data
+    data = pd.read_csv(uploaded_file)
 
-    # Display the dataset
-    if st.checkbox("Show raw data"):
-        st.subheader("Raw Data")
-        st.write(anime_df)
+    # Display the first few rows of the dataframe
+    st.subheader("Data Preview")
+    st.write(data.head())
 
     # Show basic statistics
     st.subheader("Basic Statistics")
-    st.write(anime_df.describe())
+    st.write(data.describe())
 
-    # Plotting ratings distribution
-    st.subheader("Distribution of Ratings")
-    fig, ax = plt.subplots()
-    sns.histplot(anime_df['rating'], bins=20, kde=True, ax=ax)
-    ax.set_title('Distribution of Anime Ratings')
-    ax.set_xlabel('Rating')
-    ax.set_ylabel('Frequency')
-    st.pyplot(fig)
+    # Show data types
+    st.subheader("Data Types")
+    st.write(data.dtypes)
 
-    # Plotting popularity distribution
-    st.subheader("Distribution of Popularity")
-    fig2, ax2 = plt.subplots()
-    sns.histplot(anime_df['popularity'], bins=20, kde=True, ax=ax2)
-    ax2.set_title('Distribution of Anime Popularity')
-    ax2.set_xlabel('Popularity')
-    ax2.set_ylabel('Frequency')
-    st.pyplot(fig2)
+    # Check for missing values
+    st.subheader("Missing Values")
+    st.write(data.isnull().sum())
 
-    # Genre analysis
-    st.subheader("Top Genres")
-    genre_counts = anime_df['genres'].explode().value_counts()
-    top_genres = genre_counts.head(10)
-    fig3, ax3 = plt.subplots()
-    sns.barplot(x=top_genres.values, y=top_genres.index, ax=ax3)
-    ax3.set_title('Top 10 Genres')
-    ax3.set_xlabel('Count')
-    ax3.set_ylabel('Genre')
-    st.pyplot(fig3)
+    # Visualizations
+    st.subheader("Visualizations")
 
-    # Filter by genre
-    st.subheader("Filter by Genre")
-    genre_options = anime_df['genres'].explode().unique()
-    selected_genre = st.selectbox("Select a Genre", options=genre_options)
+    # Histogram
+    if st.checkbox("Show Histogram"):
+        column = st.selectbox("Select column for histogram", data.columns)
+        fig, ax = plt.subplots()
+        sns.histplot(data[column], ax=ax)
+        st.pyplot(fig)
 
-    # Show filtered results
-    filtered_data = anime_df[anime_df['genres'].apply(lambda x: selected_genre in x)]
-    st.write(f"Showing {len(filtered_data)} anime for genre: {selected_genre}")
-    st.write(filtered_data[['title', 'rating', 'popularity']])
+    # Correlation heatmap
+    if st.checkbox("Show Correlation Heatmap"):
+        fig, ax = plt.subplots()
+        sns.heatmap(data.corr(), annot=True, cmap='coolwarm', ax=ax)
+        st.pyplot(fig)
 
-# Main app logic
-if __name__ == "__main__":
-    st.sidebar.title("Navigation")
-    page = st.sidebar.radio("Go to", ["Recommendations", "EDA"])
+    # Pairplot
+    if st.checkbox("Show Pairplot"):
+        fig = sns.pairplot(data)
+        st.pyplot(fig)
 
-    if page == "Recommendation":
-        # Include your existing recommendation system code here
-        pass  # Replace this with your recommendation system code
-    elif page == "EDA":
-        eda_page()
+# Categorical plots
+    if st.checkbox("Show Categorical Plot"):
+        categorical_column = st.selectbox("Select categorical column", data.select_dtypes(include=['object']).columns)
+        numerical_column = st.selectbox("Select numerical column", data.select_dtypes(include=['float64', 'int64']).columns)
+        fig, ax = plt.subplots()
+        sns.boxplot(x=categorical_column, y=numerical_column, data=data, ax=ax)
+        st.pyplot(fig)
+
+    # Distribution plot
+    if st.checkbox("Show Distribution Plot"):
+        column = st.selectbox("Select column for distribution plot", data.columns)
+        fig, ax = plt.subplots()
+        sns.kdeplot(data[column], ax=ax, fill=True)
+        st.pyplot(fig)
+
+    # Count plot for categorical data
+    if st.checkbox("Show Count Plot"):
+        categorical_column = st.selectbox("Select categorical column for count plot", data.select_dtypes(include=['object']).columns)
+        fig, ax = plt.subplots()
+        sns.countplot(x=categorical_column, data=data, ax=ax)
+        st.pyplot(fig)
+
+    # Add more analyses as needed
+    if st.checkbox("Show Data Distribution"):
+        st.subheader("Data Distribution")
+        for column in data.select_dtypes(include=['float64', 'int64']).columns:
+            st.write(f"Distribution for {column}")
+            fig, ax = plt.subplots()
+            sns.histplot(data[column], bins=30, kde=True, ax=ax)
+            st.pyplot(fig)
