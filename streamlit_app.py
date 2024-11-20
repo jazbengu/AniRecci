@@ -1,12 +1,10 @@
-# File: anime_recommendation_app.py
-
 import streamlit as st
 import pandas as pd
 import requests
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-
+# Function to fetch anime details
 def fetch_anime_details(title):
     try:
         url = f"https://api.jikan.moe/v4/anime?q={title}&limit=1"
@@ -29,6 +27,7 @@ def fetch_anime_details(title):
         print(f"Error fetching details for '{title}': {e}")
     return None
 
+# Function to recommend lesser-known anime
 def recommend_less_popular(fetched_anime, tfidf_vectorizer, tfidf_matrix, less_popular_anime, num_recommendations=5):
     fetched_descriptions = [anime['description'] for anime in fetched_anime if anime]
 
@@ -54,12 +53,14 @@ def recommend_less_popular(fetched_anime, tfidf_vectorizer, tfidf_matrix, less_p
 
     return recommendations
 
+# Function for user feedback
 def get_user_feedback():
     feedback = st.selectbox("Rate your overall recommendations experience:", options=["Select", "👍", "👎"])
     return feedback
 
+# Main application
 if __name__ == "__main__":
-    st.title("AniRecci")
+    st.title("AniRecci - Discover Lesser-Known Anime 🌟")
 
     # Load and preprocess the dataset
     anime_df = pd.read_csv('less_popular_anime.csv')
@@ -82,9 +83,11 @@ if __name__ == "__main__":
     if 'feedback' not in st.session_state:
         st.session_state.feedback = ""
 
+    # User input section
     st.session_state.user_input = st.text_input("Enter your favorite anime titles (comma-separated):", st.session_state.user_input)
     st.session_state.num_recommendations = st.slider("Number of recommendations:", 1, 10, st.session_state.num_recommendations)
 
+    # Colorful "Get Recommendations" Button
     if st.button("Get Recommendations"):
         if st.session_state.user_input:
             titles = [title.strip() for title in st.session_state.user_input.split(',')]
@@ -97,18 +100,21 @@ if __name__ == "__main__":
             if fetched_anime:
                 st.session_state.recommendations = recommend_less_popular(fetched_anime, tfidf_vectorizer, tfidf_matrix, less_popular_anime, st.session_state.num_recommendations)
                 if st.session_state.recommendations:
-                    st.write("### Here Are Some Lesser-Known Anime")
+                    st.write("### Here Are Some Lesser-Known Anime 🌸")
 
+                    # Display recommendations with colorful borders and hover effects
                     cols = st.columns(len(st.session_state.recommendations))
 
                     for col, anime in zip(cols, st.session_state.recommendations):
                         with col:
                             image_url = anime.get('image_url', "https://via.placeholder.com/120")
                             st.image(image_url, width=120)
+                            st.markdown(f"<div class='recommendation-card'>", unsafe_allow_html=True)
                             st.markdown(f"**Title:** {anime['title']}")
                             st.markdown(f"**Genres:** {', '.join(anime['genres'])}")
                             st.markdown(f"**Rating:** {anime['rating']:.1f}")
                             st.markdown(f"**Description:** {anime['description'][:250]}...")
+                            st.markdown("</div>", unsafe_allow_html=True)
 
                     feedback = get_user_feedback()
                     if feedback != "Select":
@@ -121,19 +127,8 @@ if __name__ == "__main__":
         else:
             st.error("Please enter at least one anime title.")
 
-    if st.session_state.recommendations:
-                    st.write("### Recommended Lesser-Known Anime")
-
-                    cols = st.columns(len(st.session_state.recommendations))
-
-                    for col, anime in zip(cols, st.session_state.recommendations):
-                        with col:
-                            image_url = anime.get('image_url', "https://via.placeholder.com/120")
-                            st.image(image_url, width=120)
-                            st.markdown(f"**Title:** {anime['title']}")
-                            st.markdown(f"**Genres:** {', '.join(anime['genres'])}")
-                            st.markdown(f"**Rating:** {anime['rating']:.1f}")
-                           
-    
+    # Display feedback section
     if st.session_state.feedback:
-        st.write(f"### Thank You Feedback!")
+        st.write(f"### Thank You for Your Feedback! 🙏")
+        st.markdown(f"Your feedback: {st.session_state.feedback}")
+
