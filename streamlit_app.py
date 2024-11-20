@@ -6,48 +6,6 @@ import requests
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-# Caching the fetched anime data
-@st.cache_data
-def fetch_anime_data_paged(limit=4500):
-    anime_list = []
-    current_page = 1
-    fetched_count = 0
-
-    while fetched_count < limit:
-        try:
-            url = f"https://api.jikan.moe/v4/anime?page={current_page}"
-            response = requests.get(url)
-
-            if response.status_code == 200:
-                data = response.json().get('data', [])
-                if not data:
-                    print("No more anime data available.")
-                    break
-
-                for anime in data:
-                    anime_data = {
-                        'id': anime.get('mal_id'),
-                        'title': anime.get('title'),
-                        'genres': [genre['name'] for genre in anime.get('genres', [])],
-                        'popularity': anime.get('popularity'),
-                        'rating': anime.get('score'),
-                        'description': anime.get('synopsis'),
-                        'image_url': anime.get('images', {}).get('jpg', {}).get('image_url')
-                    }
-                    anime_list.append(anime_data)
-                    fetched_count += 1
-                    if fetched_count >= limit:
-                        break
-
-                current_page += 1
-            else:
-                print(f"Error fetching page {current_page}: HTTP {response.status_code}")
-                break
-        except Exception as e:
-            print(f"Error fetching page {current_page}: {e}")
-            break
-
-    return anime_list
 
 def fetch_anime_details(title):
     try:
@@ -101,7 +59,7 @@ def get_user_feedback():
     return feedback
 
 if __name__ == "__main__":
-    st.title("Anime Recommendation System")
+    st.title("AniRecci")
 
     # Load and preprocess the dataset
     anime_df = pd.read_csv('less_popular_anime.csv')
@@ -139,7 +97,7 @@ if __name__ == "__main__":
             if fetched_anime:
                 st.session_state.recommendations = recommend_less_popular(fetched_anime, tfidf_vectorizer, tfidf_matrix, less_popular_anime, st.session_state.num_recommendations)
                 if st.session_state.recommendations:
-                    st.write("### Recommended Lesser-Known Anime")
+                    st.write("### Here Are Some Lesser-Known Anime")
 
                     cols = st.columns(len(st.session_state.recommendations))
 
