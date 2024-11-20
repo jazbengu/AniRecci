@@ -44,24 +44,39 @@ if uploaded_file is not None:
 
     # Correlation heatmap
     if st.checkbox("Show Correlation Heatmap"):
-        for_Hm['genres'] = for_Hm['genres'].apply(ast.literal_eval)
-        mlb = MultiLabelBinarizer()
-        genres_encoded = pd.DataFrame(mlb.fit_transform(for_Hm['genres']), 
-                                    columns=mlb.classes_, 
-                                    index=for_Hm.index)
-        for_Hm['rating'].fillna(for_Hm['rating'].median(), inplace=True)
+            # Ensure genres column exists and process it
+            if 'genres' in data.columns and 'popularity' in data.columns and 'rating' in data.columns:
+                data['genres'] = data['genres'].apply(ast.literal_eval)  # Convert string to list
+                mlb = MultiLabelBinarizer()
+                genres_encoded = pd.DataFrame(
+                    mlb.fit_transform(data['genres']),
+                    columns=mlb.classes_,
+                    index=data.index
+                )
 
-        anime_features = pd.concat([genres_encoded, for_Hm[['popularity', 'rating']]], axis=1)
+                # Fill missing ratings with the median
+                data['rating'].fillna(data['rating'].median(), inplace=True)
 
-        correlation_matrix = anime_features.corr()
-        plt.figure(figsize=(16, 12))
+                # Combine genres, popularity, and rating for correlation matrix
+                anime_features = pd.concat([genres_encoded, data[['popularity', 'rating']]], axis=1)
 
-        # Plotting the heatmap
-        sns.heatmap(correlation_matrix, annot=False, cmap="coolwarm", fmt=".2f", cbar=True)
+                # Compute correlation matrix
+                correlation_matrix = anime_features.corr()
 
-        # Adding titles and labels
-        plt.title("Heatmap of Anime Features (Genres, Popularity, and Ratings)", fontsize=16)
-        plt.show(fig)
+                # Plot the heatmap
+                fig, ax = plt.subplots(figsize=(16, 12))
+                sns.heatmap(
+                    correlation_matrix,
+                    annot=False,
+                    cmap="coolwarm",
+                    fmt=".2f",
+                    cbar=True,
+                    ax=ax
+                )
+                ax.set_title("Heatmap of Anime Features (Genres, Popularity, and Ratings)", fontsize=16)
+                st.pyplot(fig)
+            else:
+                st.error("Required columns ('genres', 'popularity', 'rating') are missing in the dataset.")
 
     # Pairplot
     if st.checkbox("Show Pairplot"):
