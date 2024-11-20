@@ -62,12 +62,8 @@ def recommend_less_popular(fetched_anime, tfidf_vectorizer, tfidf_matrix, less_p
     elapsed_time = time.time() - start_time
     st.session_state.recommend_time += elapsed_time
 
-    # Store similarity scores for analysis
-    st.session_state.similarity_scores = [score[1] for score in scores[:num_recommendations]]
-
     return recommendations
 
-# Function for user feedback on individual recommendations
 def get_individual_feedback(recommendations):
     feedback = {}
     for anime in recommendations:
