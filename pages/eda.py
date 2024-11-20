@@ -61,7 +61,8 @@ if uploaded_file is not None:
 
         # Adding titles and labels
         plt.title("Heatmap of Anime Features (Genres, Popularity, and Ratings)", fontsize=16)
-        plt.show()
+        plt.show(fig)
+
     # Pairplot
     if st.checkbox("Show Pairplot"):
         fig = sns.pairplot(data)
