@@ -4,6 +4,9 @@ import requests
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
+# Load external CSS file
+st.markdown('<style>' + open('style.css').read() + '</style>', unsafe_allow_html=True)
+
 
 # Function to fetch anime details
 def fetch_anime_details(title):
