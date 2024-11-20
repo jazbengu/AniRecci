@@ -1,6 +1,13 @@
 [theme]
+<<<<<<< HEAD
 base="dark"
 primaryColor="#4a1a1a"
 backgroundColor="#5f8b8b"
 secondaryBackgroundColor="#969dd2"
 font="monospace"
+=======
+primaryColor="#ffdcdb"
+backgroundColor="#91a8d0"
+secondaryBackgroundColor="#b4c8ea"
+textColor="#f7cac9"
+>>>>>>> 20856502bd8fcbf0a274f721f8ee9d1700be3f65
